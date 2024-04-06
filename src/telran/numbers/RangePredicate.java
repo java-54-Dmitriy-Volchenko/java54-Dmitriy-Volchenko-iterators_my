@@ -1,34 +1,37 @@
 package telran.numbers;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
-public class RangePredicate extends Range{
+public class RangePredicate extends Range {
     private Predicate<Integer> predicate;
-    
+    private boolean isPredicateSet = false;
+
     protected RangePredicate(int min, int max, Predicate<Integer> predicate) {
-        super(min, max);   
-        this.predicate = predicate;
+        super(min, max);
+        if (predicate != null) {
+            this.predicate = predicate;
+            isPredicateSet = true;
+        }
     }
-    
+
     public static RangePredicate getRange(int min, int max, Predicate<Integer> predicate) {
         checkMinMax(min, max);
-        return new RangePredicate(min, max, predicate);//adds state of predicate to instance
+        return new RangePredicate(min, max, predicate);
     }
-    
+
     @Override
     public Iterator<Integer> iterator() {
         return new RangePredicateIterator();
     }
-    
+
     private class RangePredicateIterator implements Iterator<Integer> {
         private int current = min;
-        
+
         public RangePredicateIterator() {
-            findNext(); // finding next element without changing state of current in hasNext
+            findNext();
         }
-        
+
         @Override
         public boolean hasNext() {
             return current <= max;
@@ -41,16 +44,18 @@ public class RangePredicate extends Range{
             }
             int next = current;
             current++;
-            findNext(); 
+            findNext();
             return next;
         }
-        
+
         private void findNext() {
-            while (current <= max) {
-                if (predicate == null || predicate.test(current)) {
-                    return;
+            if (isPredicateSet) {
+                while (current <= max) {
+                    if (predicate.test(current)) {
+                        return;
+                    }
+                    current++;
                 }
-                current++;
             }
         }
     }
