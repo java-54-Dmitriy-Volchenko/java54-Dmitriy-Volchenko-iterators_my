@@ -27,13 +27,13 @@ public class RangePredicate extends Range{
 		  private int current = min;
 		@Override
 		public boolean hasNext() {
-			 while (current <= max) {
-	                if (predicate == null || predicate.test(current)) {
-	                    return true;
-	                }
-	                current++;
+			boolean isNext = false;
+			 while (current <= max&&!isNext) {
+	                if (predicate == null || predicate.test(current)) 
+	                    isNext=true;                
+	                else current++;
 	            }
-	            return false;
+	            return isNext;
 		}
 
 		@Override
